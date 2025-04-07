@@ -56,8 +56,8 @@ var compressionRatio int = 70
 func RDPScann(socket string, base64CompressRatio, bitmapUpdateTimeout, screenHeight, screenWidth int) {
 	compressionRatio = base64CompressRatio
 	
-	var inactivityTimeout = new(time.Duration)
-	*inactivityTimeout = time.Duration(bitmapUpdateTimeout) * time.Millisecond
+	var inactivityTimeout = time.Duration(bitmapUpdateTimeout) * time.Millisecond
+	//*inactivityTimeout = time.Duration(bitmapUpdateTimeout) * time.Millisecond
 	
 	BitmapCH := make(chan []Bitmap, 500) // ok
 	var lastBitmapTime = new(time.Time)
@@ -80,12 +80,12 @@ func RDPScann(socket string, base64CompressRatio, bitmapUpdateTimeout, screenHei
 
 	ScreenImage = image.NewRGBA(image.Rect(0, 0, i.Width, i.Height))
 
-	update := func(lastBitmapTime *time.Time, inactivityTimeout* time.Duration) {
+	update := func(lastBitmapTime *time.Time) {
 		for {
 			select {
 			case bs := <-BitmapCH:
-				*lastBitmapTime = time.Now()
-				noActivityTimer.Reset(*inactivityTimeout)
+				(*lastBitmapTime) = time.Now()
+				noActivityTimer.Reset(inactivityTimeout)
 				paint_bitmap(bs, ScreenImage, updateBitmap)
 				//glog.Info(fmt.Sprintf("Received bitmap update at %v", lastBitmapTime.Format("15:04:05.000")))
 			case <-saveDone:
@@ -122,7 +122,7 @@ func RDPScann(socket string, base64CompressRatio, bitmapUpdateTimeout, screenHei
 
 	*lastBitmapTime = time.Now()
 
-	noActivityTimer = time.AfterFunc(*inactivityTimeout, func() {
+	noActivityTimer = time.AfterFunc(inactivityTimeout, func() {
 		if *updateBitmap {
 			//glog.Info("No bitmap updates received for", inactivityTimeout, "- saving and exiting")
 		}
@@ -130,7 +130,7 @@ func RDPScann(socket string, base64CompressRatio, bitmapUpdateTimeout, screenHei
 
 	})
 
-	update(lastBitmapTime, inactivityTimeout)
+	update(lastBitmapTime)
 
 	<-saveDone
 
