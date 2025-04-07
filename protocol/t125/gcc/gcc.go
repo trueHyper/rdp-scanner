@@ -14,7 +14,7 @@ import (
 	"os"
 	"fmt"
 
-	"github.com/tomatome/grdp/glog"
+	"github.com/trueHyper/rdp-scanner/glog"
 
 	"github.com/lunixbochs/struc"
 	"github.com/trueHyper/rdp-scanner/core"
