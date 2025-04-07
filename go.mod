@@ -1,5 +1,4 @@
-module github.com/tomatome/grdp
-replace github.com/tomatome/grdp => github.com/trueHyper/rdp-scanner v0.0.0
+module  github.com/trueHyper/rdp-scanner
 
 go 1.18
 
