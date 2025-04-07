@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/tomatome/grdp/glog"
+	"github.com/trueHyper/rdp-scanner/glog"
 
-	"github.com/tomatome/grdp/core"
-	"github.com/tomatome/grdp/emission"
+	"github.com/trueHyper/rdp-scanner/core"
+	"github.com/trueHyper/rdp-scanner/emission"
 )
 
 const (
