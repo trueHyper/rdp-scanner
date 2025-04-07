@@ -11,7 +11,7 @@ import (
 
 	"github.com/lunixbochs/struc"
 	"github.com/trueHyper/rdp-scanner/core"
-	"github.com/trueHyper/rdp-scanner/t125/gcc"
+	"github.com/trueHyper/rdp-scanner/protocol/t125/gcc"
 )
 
 type CapsType uint16
