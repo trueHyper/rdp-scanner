@@ -75,7 +75,7 @@ func GetNtlmInfo(addr string, SyncSave chan string) {
 
 	select {
 	case <-ctx.Done():
-		fmt.Println("Connection error: waiting time exceeded (5 секунды)")
+		fmt.Println("Connection error: waiting time exceeded (2 секунды)")
 		close(SyncSave)
 		return
 	case <-done:
