@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/trueHyper/rdp-scanner/core"
-	//"github.com/tomatome/grdp/glog"
 )
 
 type Screen struct {
