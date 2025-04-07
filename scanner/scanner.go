@@ -8,17 +8,13 @@ import (
 	"bytes"
 	"log"
 	"image/draw"
-	//"image/png"
 	"image/jpeg"
-	//"os"
-	//"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/trueHyper/rdp-scanner/core"
-	//"github.com/tomatome/grdp/glog"
 )
 
 
