@@ -17,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tomatome/grdp/core"
+	"github.com/trueHyper/rdp-scanner/core"
 	//"github.com/tomatome/grdp/glog"
 )
 
