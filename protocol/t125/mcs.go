@@ -8,17 +8,17 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/tomatome/grdp/plugin/cliprdr"
-	"github.com/tomatome/grdp/plugin/rail"
+	"github.com/trueHyper/rdp-scanner/plugin/cliprdr"
+	"github.com/trueHyper/rdp-scanner/plugin/rail"
 
-	"github.com/tomatome/grdp/plugin/drdynvc"
+	"github.com/trueHyper/rdp-scanner/plugin/drdynvc"
 
-	"github.com/tomatome/grdp/core"
-	"github.com/tomatome/grdp/emission"
-	"github.com/tomatome/grdp/glog"
-	"github.com/tomatome/grdp/protocol/t125/ber"
-	"github.com/tomatome/grdp/protocol/t125/gcc"
-	"github.com/tomatome/grdp/protocol/t125/per"
+	"github.com/trueHyper/rdp-scanner/core"
+	"github.com/trueHyper/rdp-scanner/emission"
+	"github.com/trueHyper/rdp-scanner/grdp/glog"
+	"github.com/trueHyper/rdp-scanner/protocol/t125/ber"
+	"github.com/trueHyper/rdp-scanner/protocol/t125/gcc"
+	"github.com/trueHyper/rdp-scanner/protocol/t125/per"
 )
 
 // take idea from https://github.com/Madnikulin50/gordp
