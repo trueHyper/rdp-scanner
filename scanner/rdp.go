@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/trueHyper/rdp-scanner/plugin"
-	"github.com/trueHyper/rdp-scanner/cliprdr"
+	"github.com/trueHyper/rdp-scanner/plugin/cliprdr"
 
 	"github.com/trueHyper/rdp-scanner/core"
 	"github.com/trueHyper/rdp-scanner/glog"
