@@ -14,11 +14,11 @@ import (
 	"os"
 	"fmt"
 
-	"github.com/tomatome/grdp/glog"
+	"github.com/trueHyper/rdp-scanner/glog"
 
 	"github.com/lunixbochs/struc"
-	"github.com/tomatome/grdp/core"
-	"github.com/tomatome/grdp/protocol/t125/per"
+	"github.com/trueHyper/rdp-scanner/core"
+	"github.com/trueHyper/rdp-scanner/protocol/t125/per"
 )
 
 var t124_02_98_oid = []byte{0, 0, 20, 124, 0, 1}
