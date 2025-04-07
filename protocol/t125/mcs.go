@@ -15,7 +15,7 @@ import (
 
 	"github.com/trueHyper/rdp-scanner/core"
 	"github.com/trueHyper/rdp-scanner/emission"
-	"github.com/trueHyper/rdp-scanner/grdp/glog"
+	"github.com/trueHyper/rdp-scanner/glog"
 	"github.com/trueHyper/rdp-scanner/protocol/t125/ber"
 	"github.com/trueHyper/rdp-scanner/protocol/t125/gcc"
 	"github.com/trueHyper/rdp-scanner/protocol/t125/per"
