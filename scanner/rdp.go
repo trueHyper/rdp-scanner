@@ -8,17 +8,17 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/tomatome/grdp/plugin"
-	"github.com/tomatome/grdp/plugin/cliprdr"
+	"github.com/trueHyper/rdp-scanner/plugin"
+	"github.com/trueHyper/rdp-scanner/cliprdr"
 
-	"github.com/tomatome/grdp/core"
-	"github.com/tomatome/grdp/glog"
-	"github.com/tomatome/grdp/protocol/nla"
-	"github.com/tomatome/grdp/protocol/pdu"
-	"github.com/tomatome/grdp/protocol/sec"
-	"github.com/tomatome/grdp/protocol/t125"
-	"github.com/tomatome/grdp/protocol/tpkt"
-	"github.com/tomatome/grdp/protocol/x224"
+	"github.com/trueHyper/rdp-scanner/core"
+	"github.com/trueHyper/rdp-scanner/glog"
+	"github.com/trueHyper/rdp-scanner/protocol/nla"
+	"github.com/trueHyper/rdp-scanner/protocol/pdu"
+	"github.com/trueHyper/rdp-scanner/protocol/sec"
+	"github.com/trueHyper/rdp-scanner/protocol/t125"
+	"github.com/trueHyper/rdp-scanner/protocol/tpkt"
+	"github.com/trueHyper/rdp-scanner/protocol/x224"
 )
 
 const (
