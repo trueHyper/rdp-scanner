@@ -48,14 +48,18 @@ type Control interface {
 	Close()
 }
 
+var compressionRatio int = 70
 //const inactivityTimeout = 2000 * time.Millisecond // ok
 
 // RDPScann
-func RDPScann(socket string) {
-
-	inactivityTimeout := 2000 * time.Millisecond
+func RDPScann(socket string, base64CompressRatio, bitmapUpdateTimeout, screenHeight, screenWidth int) {
+	compressionRatio = base64CompressRatio
+	
+	var inactivityTimeout = new(time.Duration)
+	*inactivityTimeout = time.Duration(bitmapUpdateTimeout) * time.Millisecond
+	
 	BitmapCH := make(chan []Bitmap, 500) // ok
-	lastBitmapTime := new(time.Time)
+	var lastBitmapTime = new(time.Time)
 	var noActivityTimer *time.Timer
 	var saveDone = make(chan struct{})
 	var ScreenImage *image.RGBA
@@ -70,17 +74,17 @@ func RDPScann(socket string) {
 		Port: strings.Split(socket, ":")[1],
 	}
 
-	i.Width = 840
-	i.Height = 600
+	i.Width = screenWidth
+	i.Height = screenHeight
 
 	ScreenImage = image.NewRGBA(image.Rect(0, 0, i.Width, i.Height))
 
-	update := func(lastBitmapTime* time.Time) {
+	update := func(lastBitmapTime *time.Time, inactivityTimeout* time.Duration) {
 		for {
 			select {
 			case bs := <-BitmapCH:
-				(*lastBitmapTime) = time.Now()
-				noActivityTimer.Reset(inactivityTimeout)
+				*lastBitmapTime = time.Now()
+				noActivityTimer.Reset(*inactivityTimeout)
 				paint_bitmap(bs, ScreenImage, updateBitmap)
 				//glog.Info(fmt.Sprintf("Received bitmap update at %v", lastBitmapTime.Format("15:04:05.000")))
 			case <-saveDone:
@@ -88,7 +92,7 @@ func RDPScann(socket string) {
 			}
 		}
 	}
-
+	
 	saveAndExit := func() {
 
 		if noActivityTimer != nil {
@@ -117,7 +121,7 @@ func RDPScann(socket string) {
 
 	*lastBitmapTime = time.Now()
 
-	noActivityTimer = time.AfterFunc(inactivityTimeout, func() {
+	noActivityTimer = time.AfterFunc(*inactivityTimeout, func() {
 		if *updateBitmap {
 			//glog.Info("No bitmap updates received for", inactivityTimeout, "- saving and exiting")
 		}
@@ -125,7 +129,7 @@ func RDPScann(socket string) {
 
 	})
 
-	update(lastBitmapTime)
+	update(lastBitmapTime, inactivityTimeout)
 
 	<-saveDone
 
@@ -168,7 +172,7 @@ func ToRGBA(pixel int, i int, data []byte) (r, g, b, a uint8) {
 func saveImage(SyncSave chan string, ScreenImage *image.RGBA, updateBitmap *bool) {
 
 	if !(*updateBitmap) {
-		//glog.Info("i/o timeout, no bitmap after", inactivityTimeout, ". Screen is not saving.")
+		log.Println("i/o timeout, no bitmap after.. Screen is not saving.")
 		select {
 		case _, ok := <-SyncSave:
 			if !ok {
@@ -181,35 +185,24 @@ func saveImage(SyncSave chan string, ScreenImage *image.RGBA, updateBitmap *bool
 	}
 
 	if ScreenImage == nil {
-		//glog.Error("No image to save")
 		SyncSave <- ""
 		return
 	}
-
-	filename := filepath.Join(
-		"screenshots",
-		fmt.Sprintf("rdp_screenshot_%d.png", time.Now().Unix()),
-	)
-
-	if err := os.MkdirAll("screenshots", 0755); err != nil {
-		//glog.Error("Create directory error:", err)
+	
+	var buf bytes.Buffer
+	if err := jpeg.Encode(&buf, ScreenImage, &jpeg.Options{Quality: compressionRatio}); err != nil {
 		SyncSave <- ""
 		return
 	}
+	//if err := png.Encode(&buf, ScreenImage); err != nil {
+	//	SyncSave <- ""
+	//	return
+	//}
 
-	file, err := os.Create(filename)
-	if err != nil {
-		//glog.Error("Create file error:", err)
-		SyncSave <- ""
-		return
-	}
-	defer file.Close()
-
-	if err := png.Encode(file, ScreenImage); err != nil {
-		//glog.Error("Encode image error:", err)
-		SyncSave <- ""
-		return
-	}
+	encoded := base64.StdEncoding.EncodeToString(buf.Bytes())
+	
+	
+	fmt.Println(encoded)
 
 	select {
 	case _, ok := <-SyncSave:
@@ -218,7 +211,7 @@ func saveImage(SyncSave chan string, ScreenImage *image.RGBA, updateBitmap *bool
 			return
 		}
 	default:
-		SyncSave <- filename
+		SyncSave <- encoded
 	}
 	//glog.Info("Screenshot saved to:", filename)
 }
