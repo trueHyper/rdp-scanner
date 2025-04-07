@@ -14,14 +14,14 @@ import (
 
 	"github.com/lunixbochs/struc"
 
-	"github.com/tomatome/grdp/protocol/nla"
+	"github.com/trueHyper/rdp-scanner/protocol/nla"
 
-	"github.com/tomatome/grdp/core"
-	"github.com/tomatome/grdp/emission"
-	"github.com/tomatome/grdp/glog"
-	"github.com/tomatome/grdp/protocol/lic"
-	"github.com/tomatome/grdp/protocol/t125"
-	"github.com/tomatome/grdp/protocol/t125/gcc"
+	"github.com/trueHyper/rdp-scanner/core"
+	"github.com/trueHyper/rdp-scanner/emission"
+	"github.com/trueHyper/rdp-scanner/glog"
+	"github.com/trueHyper/rdp-scanner/protocol/lic"
+	"github.com/trueHyper/rdp-scanner/protocol/t125"
+	"github.com/trueHyper/rdp-scanner/protocol/t125/gcc"
 )
 
 /**
