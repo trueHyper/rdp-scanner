@@ -14,7 +14,7 @@ import (
 
 	"github.com/lunixbochs/struc"
 
-	"github.com/trueHyper/rdp-scanner/nla"
+	"github.com/trueHyper/rdp-scanner/protocol/nla"
 
 	"github.com/trueHyper/rdp-scanner/core"
 	"github.com/trueHyper/rdp-scanner/emission"
