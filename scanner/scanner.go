@@ -2,20 +2,25 @@ package scanner
 
 import (
 	"fmt"
+	"encoding/base64"
 	"image"
 	"image/color"
+	"bytes"
+	"log"
 	"image/draw"
-	"image/png"
-	"os"
-	"path/filepath"
+	//"image/png"
+	"image/jpeg"
+	//"os"
+	//"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/trueHyper/rdp-scanner/core"
+	"github.com/tomatome/grdp/core"
 	//"github.com/tomatome/grdp/glog"
 )
+
 
 type Screen struct {
 	Height int
