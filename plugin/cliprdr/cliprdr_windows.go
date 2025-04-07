@@ -8,9 +8,9 @@ import (
 	"unsafe"
 
 	"github.com/shirou/w32"
-	"github.com/tomatome/grdp/glog"
+	"github.com/trueHyper/rdp-scanner/glog"
 
-	"github.com/tomatome/grdp/core"
+	"github.com/trueHyper/rdp-scanner/core"
 
 	"github.com/tomatome/win"
 )
