@@ -32,5 +32,4 @@ HOW TO USE
 ```go
 go mod init <name> // если проект новый
 go mod tidy // дергаем библию
-go mod vendor // если хотим иметь все зависимости локально
 ```
