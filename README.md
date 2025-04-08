@@ -26,5 +26,11 @@ func main() {
 	wg.Wait()
 }
 ```
-
-> В проект импортируем glog и scanner -> go mod tidy -> используем функцию scanner.RDPScann(...)
+HOW TO USE
+***
+Импортируем /scanner и /glog, далее в cmd:
+```go
+go mod init <name> // если проект новый
+go mod tidy // дергаем библию
+go mod vendor // если хотим иметь все зависимости локально
+```
