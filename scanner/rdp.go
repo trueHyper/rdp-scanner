@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/trueHyper/rdp-scanner/plugin"
-	"github.com/trueHyper/rdp-scanner/plugin/cliprdr"
+	//"github.com/trueHyper/rdp-scanner/plugin/cliprdr"
 
 	"github.com/trueHyper/rdp-scanner/core"
 	"github.com/trueHyper/rdp-scanner/glog"
@@ -71,8 +71,8 @@ func uiRdp(info *Info, BitmapCH chan []Bitmap) (error, *RdpClient) {
 		glog.Error("Login:", err)
 		return err, nil
 	}
-	cc := cliprdr.NewCliprdrClient()
-	g.channels.Register(cc)
+	//cc := cliprdr.NewCliprdrClient()
+	//g.channels.Register(cc)
 
 	g.pdu.On("error", func(e error) {
 		glog.Info("on error:", e)
