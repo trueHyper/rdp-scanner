@@ -8,7 +8,7 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/trueHyper/rdp-scanner/plugin/cliprdr"
+	//"github.com/trueHyper/rdp-scanner/plugin/cliprdr"
 	"github.com/trueHyper/rdp-scanner/plugin/rail"
 
 	"github.com/trueHyper/rdp-scanner/plugin/drdynvc"
@@ -291,9 +291,9 @@ func (c *MCSClient) SetClientRemoteProgram() {
 	c.clientNetworkData.AddVirtualChannel(rail.ChannelName, rail.ChannelOption)
 }
 
-func (c *MCSClient) SetClientCliprdr() {
-	c.clientNetworkData.AddVirtualChannel(cliprdr.ChannelName, cliprdr.ChannelOption)
-}
+//func (c *MCSClient) SetClientCliprdr() {
+//	c.clientNetworkData.AddVirtualChannel(cliprdr.ChannelName, cliprdr.ChannelOption)
+//}
 
 func (c *MCSClient) connect(selectedProtocol uint32) {
 	glog.Debug("mcs client on connect", selectedProtocol)
