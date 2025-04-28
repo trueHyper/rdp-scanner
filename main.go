@@ -28,11 +28,6 @@ func main() {
 	if err := validateHost(*host); err!=nil { 
 		log.Fatal(err)
 	}
-
-	if *host == "" {
-		flag.Usage()
-		log.Fatal("Host is a required flag")
-	}
 	
 	if *compress <= 0 { *compress = 1 }
 	if *compress > 100 { *compress = 100 }
@@ -50,6 +45,10 @@ func main() {
 }
 
 func validateHost(host string) error {
+	if *host == "" {
+		log.Fatal("Host is a required flag")
+	}
+	
 	parts := strings.Split(host, ":")
 	if len(parts) != 2 {
 		return fmt.Errorf("Invalid format, must be ip:port")
