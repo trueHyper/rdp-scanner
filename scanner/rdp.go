@@ -75,18 +75,18 @@ func uiRdp(info *Info, BitmapCH chan []Bitmap) (error, *RdpClient) {
 	//g.channels.Register(cc)
 
 	g.pdu.On("error", func(e error) {
-		glog.Info("on error:", e)
+		//glog.Info("on error:", e)
 	}).On("close", func() {
 		err = errors.New("close")
-		glog.Info("on close")
+		//glog.Info("on close")
 	}).On("success", func() {
-		glog.Info("on success")
+		//glog.Info("on success")
 	}).On("ready", func() {
-		glog.Info("on ready")
+		//glog.Info("on ready")
 		/* ch */
 		//readyChan <- struct{}{}
 	}).On("bitmap", func(rectangles []pdu.BitmapData) {
-		glog.Info("Update Bitmap:", len(rectangles))
+		//glog.Info("Update Bitmap:", len(rectangles))
 		bs := make([]Bitmap, 0, 50)
 		for _, v := range rectangles {
 			IsCompress := v.IsCompress()
@@ -110,7 +110,7 @@ func uiRdp(info *Info, BitmapCH chan []Bitmap) (error, *RdpClient) {
 
 func (g *RdpClient) Login() error {
 	domain, user, pwd := g.info.Domain, g.info.Username, g.info.Passwd
-	glog.Info("Connect:", g.Host, "with", domain+"\\"+user, ":", pwd)
+	//glog.Info("Connect:", g.Host, "with", domain+"\\"+user, ":", pwd)
 	conn, err := net.DialTimeout("tcp", g.Host, 3*time.Second)
 	if err != nil {
 		return fmt.Errorf("[dial err] %v", err)
