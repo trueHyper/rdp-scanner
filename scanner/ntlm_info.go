@@ -6,9 +6,9 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
-	"os"
+	//"os"
 	"log"
-	"encoding/hex"
+	//"encoding/hex"
 	"strings"
 	"encoding/binary"
 	"time"
@@ -34,7 +34,12 @@ type NTLMInfo struct {
 	DNSComputerName     []string `json:"dns_computer_name"`
 	DNSDomainName       []string `json:"dns_domain_name"`
 	DNSTreeName         []string `json:"dns_tree_name"`
-	ImgName             []string `json:"screenshot_name"`
+}
+
+type Response struct { 
+	NTLMInfo NTLMInfo `json:"ntlm_info"`
+	Host        string   `json:"host"`
+	Screenshot  string   `json:"screenshot"`
 }
 
 type FullResponse struct {
@@ -117,7 +122,7 @@ func GetNtlmInfo(addr string, SyncSave chan string) {
 		return
 	}
 
-	fmt.Printf("\nServer response\n%s", hex.Dump(buffer[:n]))
+	//fmt.Printf("\nServer response\n%s", hex.Dump(buffer[:n]))
 
 	// switch to TLS
 	tlsConn := tls.Client(conn, &tls.Config{InsecureSkipVerify: true})
@@ -249,13 +254,11 @@ func parseNTLMTargetInfo(data []byte, addr string, SyncSave chan string) error {
 		offset += fieldLen
 	}
 	
-	fmt.Println(challenge)
+	//fmt.Println(challenge)
 	
 	imgName := <-SyncSave
 	
-	fmt.Println(challenge, "AFTER CHANEL INPUT")
-	
-	response := FullResponse{
+	response := Response{
 		NTLMInfo: NTLMInfo{
 			NetBIOSComputerName: []string{challenge.NetBIOSComputerName},
 			ProductVersion:      []string{challenge.ProductVersion},
@@ -265,30 +268,36 @@ func parseNTLMTargetInfo(data []byte, addr string, SyncSave chan string) error {
 			DNSComputerName:     []string{challenge.DNSComputerName},
 			DNSDomainName:       []string{challenge.DNSDomainName},
 			DNSTreeName:         []string{challenge.DNSTreeName},
-			ImgName:             []string{imgName},
 		},
-		IPPort: addr,
+		Host: addr,
+		Screenshot: imgName,
 	}
 
-	filename := fmt.Sprintf("%s_%s.json", strings.ReplaceAll(addr, ":", "_"), time.Now().Format("2006-01-02"))
-	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	//filename := fmt.Sprintf("%s_%s.json", strings.ReplaceAll(addr, ":", "_"), time.Now().Format("2006-01-02"))
+	//file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	//if err != nil {
+	//	return fmt.Errorf("failed to create file: %v", err)
+	//}
+	//defer file.Close()
+
+	jsonData, err := json.MarshalIndent(response, "", "    ")
 	if err != nil {
-		return fmt.Errorf("failed to create file: %v", err)
+		return fmt.Errorf("Error:", err)
 	}
-	defer file.Close()
+	fmt.Println(string(jsonData))
 
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(response); err != nil {
-		return fmt.Errorf("failed to write JSON: %v", err)
-	}
+	//encoder := json.NewEncoder(file)
+	//encoder.SetIndent("", "  ")
+	//if err := encoder.Encode(response); err != nil {
+	//	return fmt.Errorf("failed to write JSON: %v", err)
+	//}
 
-	if err := file.Sync(); err != nil {
-		return fmt.Errorf("failed to sync file: %v", err)
-	}
+	//if err := file.Sync(); err != nil {
+	//	return fmt.Errorf("failed to sync file: %v", err)
+	//}
 
-	fmt.Printf("\nSuccessfully saved NTLM info to %s\n", filename)
-	printChallengeInfo(&challenge)
+	//fmt.Printf("\nSuccessfully saved NTLM info to %s\n")
+	//printChallengeInfo(&challenge)
 	return nil
 }
 
