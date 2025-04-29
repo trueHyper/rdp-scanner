@@ -483,7 +483,7 @@ func (c *Client) connect(clientData []interface{}, serverData []interface{}, use
 	c.serverData = serverData
 	c.userId = userId
 	for _, channel := range channels {
-		glog.Infof("channel: %s <%d>:", channel.Name, channel.ID)
+		//glog.Infof("channel: %s <%d>:", channel.Name, channel.ID)
 		if channel.Name == t125.GLOBAL_CHANNEL_NAME {
 			c.channelId = channel.ID
 			//break
@@ -713,26 +713,26 @@ func (c *Client) recvLicenceInfo(channel string, s []byte) {
 	p := lic.ReadLicensePacket(r)
 	switch p.BMsgtype {
 	case lic.NEW_LICENSE:
-		glog.Info("sec NEW_LICENSE")
+		//glog.Info("sec NEW_LICENSE")
 		c.Emit("success")
 		goto connect
 	case lic.ERROR_ALERT:
 		message := p.LicensingMessage.(*lic.ErrorMessage)
-		glog.Info("sec ERROR_ALERT and ErrorCode:", message.DwErrorCode)
+		//glog.Info("sec ERROR_ALERT and ErrorCode:", message.DwErrorCode)
 		if message.DwErrorCode == lic.STATUS_VALID_CLIENT && message.DwStateTransaction == lic.ST_NO_TRANSITION {
 			goto connect
 		}
 		goto retry
 	case lic.LICENSE_REQUEST:
-		glog.Info("sec LICENSE_REQUEST")
+		//glog.Info("sec LICENSE_REQUEST")
 		c.sendClientNewLicenseRequest(p.LicensingMessage.([]byte))
 		goto retry
 	case lic.PLATFORM_CHALLENGE:
-		glog.Info("sec PLATFORM_CHALLENGE")
+		//glog.Info("sec PLATFORM_CHALLENGE")
 		c.sendClientChallengeResponse(p.LicensingMessage.([]byte))
 		goto retry
 	default:
-		glog.Error("Not a valid license packet")
+		//glog.Error("Not a valid license packet")
 		c.Emit("error", errors.New("Not a valid license packet"))
 		return
 	}
