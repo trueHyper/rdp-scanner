@@ -45,7 +45,7 @@ func main() {
 }
 
 func validateHost(host string) error {
-	if *host == "" {
+	if host == "" {
 		log.Fatal("Host is a required flag")
 	}
 	
