@@ -54,11 +54,9 @@ var compressionRatio int = 70
 
 // RDPScann
 func RDPScann(socket string, base64CompressRatio, bitmapUpdateTimeout, screenHeight, screenWidth int) {
-	compressionRatio = base64CompressRatio
+	compressionRatio = 100 - base64CompressRatio
 	
 	var inactivityTimeout = time.Duration(bitmapUpdateTimeout) * time.Millisecond
-	//*inactivityTimeout = time.Duration(bitmapUpdateTimeout) * time.Millisecond
-	
 	BitmapCH := make(chan []Bitmap, 500) // ok
 	var lastBitmapTime = new(time.Time)
 	var noActivityTimer *time.Timer
@@ -87,7 +85,6 @@ func RDPScann(socket string, base64CompressRatio, bitmapUpdateTimeout, screenHei
 				(*lastBitmapTime) = time.Now()
 				noActivityTimer.Reset(inactivityTimeout)
 				paint_bitmap(bs, ScreenImage, updateBitmap)
-				//glog.Info(fmt.Sprintf("Received bitmap update at %v", lastBitmapTime.Format("15:04:05.000")))
 			case <-saveDone:
 				return
 			}
@@ -203,18 +200,17 @@ func saveImage(SyncSave chan string, ScreenImage *image.RGBA, updateBitmap *bool
 	encoded := base64.StdEncoding.EncodeToString(buf.Bytes())
 	
 	
-	fmt.Println(encoded)
+	//fmt.Println(encoded)
 
 	select {
 	case _, ok := <-SyncSave:
 		if !ok {
-			fmt.Println("Канал закрыт и пуст!")
+			//fmt.Println("Канал закрыт и пуст!")
 			return
 		}
 	default:
 		SyncSave <- encoded
 	}
-	//glog.Info("Screenshot saved to:", filename)
 }
 
 func Bpp(BitsPerPixel uint16) int {
