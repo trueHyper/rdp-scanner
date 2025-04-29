@@ -5,14 +5,12 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"time"
+
 	"github.com/trueHyper/rdp-scanner/glog"
 	"github.com/lunixbochs/struc"
 	"github.com/trueHyper/rdp-scanner/core"
 	"github.com/trueHyper/rdp-scanner/emission"
 	"github.com/trueHyper/rdp-scanner/protocol/tpkt"	
-	"strings"
-	"encoding/binary"
 )
 
 // take idea from https://github.com/Madnikulin50/gordp
@@ -51,10 +49,7 @@ const (
 	PROTOCOL_HYBRID           = 0x00000002
 	PROTOCOL_HYBRID_EX        = 0x00000008
 )
-const (
-	signature = "NTLMSSP\x00"
-	ntEpochOffset = 11644473600
-)
+
 /**
  * Use to negotiate security layer of RDP stack
  * In node-rdpjs only ssl is available
@@ -75,156 +70,6 @@ func NewNegotiation() *Negotiation {
 }
 
 type failureCode int
-
-func readNegotiationPacket(negotiation *Negotiation) error {
-	var buf bytes.Buffer
-	err := struc.Pack(&buf, negotiation) // Сериализация структуры
-	if err != nil {
-		return fmt.Errorf("ошибка сериализации: %v", err)
-	}
-
-	// Выводим байты в консоль в виде HEX
-	return parseNTLMTargetInfo(buf.Bytes())
-	
-}
-type NTLMChallenge struct {
-	TargetName           string
-	NetBIOSDomainName    string
-	NetBIOSComputerName  string
-	DNSDomainName        string
-	DNSComputerName      string
-	DNSTreeName          string
-	ProductVersion       string
-	SystemTime           string
-}
-
-func parseNTLMTargetInfo(data []byte) error {
-	
-	var challenge NTLMChallenge
-	var targetLen, targetOffset int
-	
-	//fmt.Printf("\nTarget Info\n%s", hex.Dump(data))
-	
-	pos := strings.Index(string(data), signature)
-	if pos == -1 {
-		return fmt.Errorf("NTLM signature not found")
-	}
-	
-	buffer := data[pos:] // discard ASN header
-	
-	if len(buffer) < 48 {
-		return fmt.Errorf("Error: NTLM Challenge is too short")
-	}
-	
-	msgType := int(binary.LittleEndian.Uint16(buffer[8:12]))  // 4byte LE
-	if msgType != 0x2 { 
-		return fmt.Errorf("NTLM Challenge (Type 2) was expected, type received %d", msgType)
-	}
-	
-	targetLen =  int(binary.LittleEndian.Uint16(buffer[12:14]))  // 2byte LE
-	targetOffset = int(binary.LittleEndian.Uint16(buffer[16:20])) // 4byte LE
-	
-	if targetLen > 0 {
-	// get TargetName
-		challenge.TargetName = string(removeNullBytes(buffer[targetOffset:targetOffset + targetLen]))
-	}
-	
-	var domainLen, domainOffset int
-	
-	domainLen = int(binary.LittleEndian.Uint16(buffer[40:42])) 
-	domainOffset = int(binary.LittleEndian.Uint16(buffer[44:48])) 
-	
-	// win9x check...?
-	
-	// get version major/minor/build
-	challenge.ProductVersion = fmt.Sprintf("%d.%d.%d", buffer[48], buffer[49], 
-					int(binary.LittleEndian.Uint16(buffer[50:52])))
-	
-	if domainLen == 0 {
-		return fmt.Errorf("Domain Length 0, target TargetInfo empty")
-	}
-	
-	var dataLen, offset, fieldType, fieldLen int
-	
-	dataLen = len(buffer)
-	offset = domainOffset // type pos
-	
-	for ; ; {
-	
-		if offset >= dataLen {
-			break
-		}
-		
-		fieldType = int(buffer[offset])
-		fieldLen = int(binary.LittleEndian.Uint16(buffer[offset+2:offset+4])) 
-		
-		offset += 4
-		
-		if fieldLen == 0 {
-			continue
-		}
-		
-		switch fieldType {
-			case 0x2:
-				challenge.NetBIOSDomainName = 
-					string(removeNullBytes(buffer[offset:offset+fieldLen]))
-			case 0x1:
-				challenge.NetBIOSComputerName = 
-					string(removeNullBytes(buffer[offset:offset+fieldLen]))
-			case 0x3:
-				challenge.DNSComputerName = 
-					string(removeNullBytes(buffer[offset:offset+fieldLen]))
-			case 0x4:
-				challenge.DNSDomainName = 
-					string(removeNullBytes(buffer[offset:offset+fieldLen]))
-			case 0x5:
-				challenge.DNSTreeName = 
-					string(removeNullBytes(buffer[offset:offset+fieldLen]))
-			case 0x7:
-				challenge.SystemTime = 
-					ConvertFILETIME(buffer[offset:offset+fieldLen])
-		}
-		
-		offset += fieldLen
-	}
-
-	printChallengeInfo(&challenge)
-	
-	return nil
-}
-func removeNullBytes(data []byte) []byte {
-	var result []byte
-	for _, b := range data {
-		if b != 0x0 { 
-			result = append(result, b)
-		}
-	}
-	return result
-}
-
-func ConvertFILETIME(filetime []byte) string {
-	if len(filetime) != 8 {
-		panic("Invalid FILETIME length")
-	}
-
-	ft := binary.LittleEndian.Uint64(filetime)
-
-	seconds := int64(ft/10000000) - ntEpochOffset
-	nanoseconds := int64(ft%10000000) * 100
-	t := time.Unix(seconds, nanoseconds).UTC()
-	
-	return t.Format(time.RFC3339)
-}
-func printChallengeInfo(challenge* NTLMChallenge) {
-	glog.Info("\n|Target_Name:", challenge.TargetName)
-	fmt.Println("|NetBIOS_Domain_Name:", challenge.NetBIOSDomainName)
-	fmt.Println("|NetBIOS_Computer_Name:", challenge.NetBIOSComputerName)
-	fmt.Println("|DNS_Domain_Name:", challenge.DNSDomainName)
-	fmt.Println("|DNS_Computer_Name:", challenge.DNSComputerName)
-	fmt.Println("|DNS_Tree_Name:", challenge.DNSTreeName)
-	fmt.Println("|Product_Version:", challenge.ProductVersion)
-	fmt.Println("|System_Time:", challenge.SystemTime)
-}
 
 const (
 	//The server requires that the client support Enhanced RDP Security (section 5.4) with either TLS 1.0, 1.1 or 1.2 (section 5.4.5.1) or CredSSP (section 5.4.5.2). If only CredSSP was requested then the server only supports TLS.
@@ -399,29 +244,26 @@ func (x *X224) recvConnectionConfirm(s []byte) {
 	glog.Debug("x224 recvConnectionConfirm ", hex.EncodeToString(s))
 	r := bytes.NewReader(s)
 	ln, _ := core.ReadUInt8(r)
-
 	if ln > 6 {
 		message := &ServerConnectionConfirm{}
 		if err := struc.Unpack(bytes.NewReader(s), message); err != nil {
 			glog.Error("ReadServerConnectionConfirm err", err)
 			return
 		}
-		glog.Debugf("message.ProtocolNeg: %+v", message.ProtocolNeg)
-    var buf bytes.Buffer
-	struc.Pack(&buf,  message.ProtocolNeg) // Сериализация структуры
-	fmt.Println("Negotiation packet bytes:", hex.EncodeToString(buf.Bytes()))
-	parseNTLMTargetInfo((buf.Bytes()))
-
-	
+		glog.Debugf("message: %+v", *message.ProtocolNeg)
 		if message.ProtocolNeg.Type == TYPE_RDP_NEG_FAILURE {
-			glog.Error(fmt.Sprintf("NODE_RDP_PROTOCOL_X224_NEG_FAILURE with code: %d, see https://msdn.microsoft.com/en-us/library/cc240507.aspx",
+			glog.Error(fmt.Sprintf("NODE_RDP_PROTOCOL_X224_NEG_FAILURE with code: %d,see https://msdn.microsoft.com/en-us/library/cc240507.aspx",
 				message.ProtocolNeg.Result))
+			//only use Standard RDP Security mechanisms
+			if message.ProtocolNeg.Result == 2 {
+				glog.Info("Only use Standard RDP Security mechanisms, Reconnect with Standard RDP")
+			}
 			x.Close()
 			return
 		}
 
 		if message.ProtocolNeg.Type == TYPE_RDP_NEG_RSP {
-			glog.Info("TYPE_RDP_NEG_RSP")
+			//glog.Info("TYPE_RDP_NEG_RSP")
 			x.selectedProtocol = message.ProtocolNeg.Result
 		}
 	} else {
@@ -436,13 +278,13 @@ func (x *X224) recvConnectionConfirm(s []byte) {
 	x.transport.On("data", x.recvData)
 
 	if x.selectedProtocol == PROTOCOL_RDP {
-		glog.Info("*** RDP security selected ***")
+		//glog.Info("*** RDP security selected ***")
 		x.Emit("connect", x.selectedProtocol)
 		return
 	}
 
 	if x.selectedProtocol == PROTOCOL_SSL {
-		glog.Info("*** SSL security selected ***")
+		//glog.Info("*** SSL security selected ***")
 		err := x.transport.(*tpkt.TPKT).StartTLS()
 		if err != nil {
 			glog.Error("start tls failed:", err)
@@ -453,7 +295,7 @@ func (x *X224) recvConnectionConfirm(s []byte) {
 	}
 
 	if x.selectedProtocol == PROTOCOL_HYBRID {
-		glog.Info("*** NLA Security selected ***")
+		//glog.Info("*** NLA Security selected ***")
 		err := x.transport.(*tpkt.TPKT).StartNLA()
 		if err != nil {
 			glog.Error("start NLA failed:", err)
@@ -463,7 +305,6 @@ func (x *X224) recvConnectionConfirm(s []byte) {
 		return
 	}
 }
-
 
 func (x *X224) recvData(s []byte) {
 	glog.Trace("x224 recvData", hex.EncodeToString(s), "emit data")
