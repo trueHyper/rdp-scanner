@@ -1,36 +1,59 @@
+## RDP Scanner
 
+### Install
 
-EXAMPLE
-***
 ```go
-package main
+go install github.com/trueHyper/rdp-scanner/cmd/rdp-scanner@latest
+```
+### Usage
+```go
+rdp-scanner -host 217.77.56.189:3389 -w 1080 -h 640 -c 40 -t 3000
+```
+| Flag    | Description |
+| --------| ----------- |
+| `-host` | **(Required)** Target IP and port in the format `<ip>:<port>`. |
+| `-w`    | Screen width in pixels. |
+| `-h`    | Screen height in pixels. |
+| `-t`    | Bitmap update interval in milliseconds — how much time the bitmaps have to update between frames. |
+| `-c`    | Compression percentage (0–100) — defines how much the screen image will be compressed. |
 
-import "github.com/trueHyper/rdp-scanner/scanner"
-import "github.com/trueHyper/rdp-scanner/glog"
-import "log"
-import "os"
-import "sync"
+### Example
+```go
+ rdp-scanner -host 217.77.56.189:3389 -w 100 -h 50 -c 100 -t 2500
+```
+This will connect to 217.77.56.189 on port 3389, request a screen resolution of 100×50 pixels, apply 100% compression, and set a 2.5-second bitmap update interval.
 
-func main() {
-
-	glog.SetLevel(glog.INFO)
-	glog.SetLogger(log.New(os.Stdout, "", 0))
-	
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-    /* RDPScann("ip:port", base64 compress %, bitmap timeout, screen H, screen W) */
-		scanner.RDPScann("5.188.53.40:3389", 80, 2000, 640, 800)
-	}()
-	wg.Wait()
+### Output
+```bash
+true_hyper@HOME-PC:~$ rdp-scanner -host 217.77.56.189:3389 -w 100 -h 50 -c 100 -t 2500
+{
+    "ntlm_info": {
+        "netbios_computer_name": [
+            "WST-KRC-004"
+        ],
+        "product_version": [
+            "10.0.19041"
+        ],
+        "system_time": [
+            "2025-04-29T00:46:25Z"
+        ],
+        "target_name": [
+            "WST-KRC-004"
+        ],
+        "netbios_domain_name": [
+            "WST-KRC-004"
+        ],
+        "dns_computer_name": [
+            "WST-KRC-004"
+        ],
+        "dns_domain_name": [
+            "WST-KRC-004"
+        ],
+        "dns_tree_name": [
+            ""
+        ]
+    },
+    "host": "217.77.56.189:3389",
+    "screenshot": "/9j/2wCEAP////////////////////////////////////////////////////////////////////////////////////8B///////////////////////////////////////////////////////////////////////////////////////AABEIADIAZAMBIgACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AI6KKKACiiigAooooAKWkpaACiiigAooooAKKKKAEopaKAEopaKACiiigAooooAKKKKACiiigAooooAKKKKACjFFLTEJRRRSGFFFFABRRRQAUUUUAFFFFABRRRQAUtJS00JiUUUUhhRRRQAUUUUALRRRQAUUUUAf/9k="
 }
-```
-HOW TO USE
-***
-Импортируем /scanner и /glog, далее в cmd:
-```go
-go mod init <name> // если проект новый
-go mod tidy // дергаем библию
-go run .
-```
+````
