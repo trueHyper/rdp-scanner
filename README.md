@@ -1,6 +1,6 @@
 ![Static Badge](https://img.shields.io/badge/-RDP%20BANNER%20COLLECTOR-brightgreen?style=plastic&logo=go&logoColor=white&logoSize=auto&labelColor=abcdea&color=FF4571&cacheSeconds=3600)
 ## RDP Scanner
-_A banner collector that collects NTLM-info and login screen from RDP servers._
+_A banner collector that collects NTLM-info and login screen from RDP servers. Original rpeo: https://github.com/tomatome/grdp_
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/75e74111-eb7c-4698-a198-e84f5ae3096c" alt="Scanner example" width="1000"/>
