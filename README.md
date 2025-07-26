@@ -1,11 +1,19 @@
+![Static Badge](https://img.shields.io/badge/-RDP%20BANNER%20COLLECTOR-brightgreen?style=plastic&logo=go&logoColor=white&logoSize=auto&labelColor=abcdea&color=FF4571&cacheSeconds=3600)
 ## RDP Scanner
+_A banner collector that collects NTLM-info and login screen from RDP servers._
 
-### Install
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/75e74111-eb7c-4698-a198-e84f5ae3096c" alt="Scanner example" width="1000"/>
+  <br/>
+  <em>The result of the RDP server scan</em>
+</p>
+
+## Install
 
 ```go
 go install github.com/trueHyper/rdp-scanner/cmd/rdp-scanner@latest
 ```
-### Usage
+## Usage
 ```go
 rdp-scanner -host 217.77.56.189:3389 -w 1080 -h 640 -c 40 -t 3000
 ```
@@ -17,13 +25,13 @@ rdp-scanner -host 217.77.56.189:3389 -w 1080 -h 640 -c 40 -t 3000
 | `-t`    | Bitmap update interval in milliseconds — how much time the bitmaps have to update between frames. |
 | `-c`    | Compression percentage (0–100) — defines how much the screen image will be compressed. |
 
-### Example
+## Example
 ```go
  rdp-scanner -host 217.77.56.189:3389 -w 100 -h 50 -c 100 -t 2500
 ```
 This will connect to 217.77.56.189 on port 3389, request a screen resolution of 100×50 pixels, apply 100% compression, and set a 2.5-second bitmap update interval.
 
-### Output
+## Output
 ```bash
 true_hyper@HOME-PC:~$ rdp-scanner -host 217.77.56.189:3389 -w 100 -h 50 -c 100 -t 2500
 {
